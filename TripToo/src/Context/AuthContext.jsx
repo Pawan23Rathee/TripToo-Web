@@ -1,11 +1,13 @@
 // src/Context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase.js'; // Ensure this is .js
+import { auth } from '../firebase.js';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 
 const AuthContext = createContext();
@@ -14,17 +16,14 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Define your backend API base URL for DEPLOYMENT
-// AFTER DEPLOYING BACKEND ON RENDER, PASTE ITS URL HERE
-// Example: const API_BASE_URL = 'https://triptoo-backend.onrender.com/api';
-// For LOCAL DEVELOPMENT, you would use: const API_BASE_URL = '/api'; (with Vite proxy)
-const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- REPLACE THIS LINE
+const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // Ensure this is your deployed backend URL
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const saveUserProfileToDb = async (user) => {
+  // Modified: saveUserProfileToDb now accepts more details
+  const saveUserProfileToDb = async (user, additionalDetails = {}) => { // Added additionalDetails
     try {
       const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
@@ -34,6 +33,10 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({
           firebaseUid: user.uid,
           email: user.email,
+          firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''), // Use provided or Google's
+          lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''), // Use provided or Google's
+          address: additionalDetails.address || '',
+          phone: additionalDetails.phone || '',
         }),
       });
       if (!response.ok) {
@@ -47,15 +50,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (email, password) => {
+  // Modified: signup function now accepts additionalDetails
+  const signup = async (email, password, additionalDetails) => { // Added additionalDetails
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user);
+    await saveUserProfileToDb(userCredential.user, additionalDetails); // Pass additionalDetails
     return userCredential;
   };
 
+  // Modified: login function also passes basic user info
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user);
+    await saveUserProfileToDb(userCredential.user, { // Pass basic info during login too, for updates
+      firstName: userCredential.user.displayName ? userCredential.user.displayName.split(' ')[0] : '',
+      lastName: userCredential.user.displayName ? userCredential.user.displayName.split(' ').slice(1).join(' ') : ''
+    });
+    return userCredential;
+  };
+
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    await saveUserProfileToDb(userCredential.user); // Google user info already available in userCredential.user
     return userCredential;
   };
 
@@ -76,6 +91,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     login,
     logout,
+    signInWithGoogle,
     loading
   };
 

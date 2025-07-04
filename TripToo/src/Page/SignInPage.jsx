@@ -64,6 +64,7 @@ const SignInPage = () => {
           >
             {loading ? 'Logging In...' : 'Log In'}
           </button>
+          
         </form>
 
         <div className="text-center mt-4 sm:mt-6 text-gray-700 text-sm sm:text-base">
