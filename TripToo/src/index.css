@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/* src/index.css */
+
+/* ... (existing Tailwind directives and custom slick-dots styling) ... */
+
+/* Custom CSS for React Slick Slides to ensure content centering */
+.slick-slide {
+  text-align: center; /* Centers inline-block/text content */
+  /* If the above doesn't work on its own, and the slide still appears left,
+     you might need to force flexbox on the slide itself */
+  /* display: flex !important; */
+  /* justify-content: center !important; */
+  /* align-items: center !important; */
+}
+
+/* Ensure the image inside the slide is also centered using margin auto */
+.slick-slide img {
+  display: block; /* Ensure image behaves as a block for margin: auto */
+  margin: 0 auto; /* Horizontally centers the image */
+}

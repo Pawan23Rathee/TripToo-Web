@@ -3,8 +3,8 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { useCart } from '../Context/CartContext.jsx'; // Correct: .js
-import allProducts from '../data/products.js'; // Correct: .js
+import { useCart } from '../Context/CartContext.jsx';
+import allProducts from '../data/products.js';
 import { Link } from 'react-router-dom';
 
 const homepageProducts = allProducts.slice(0, 5);
@@ -36,10 +36,12 @@ const ProductSection = () => {
             className="border rounded-lg p-3 shadow hover:shadow-lg transition flex flex-col justify-between"
           >
             <Link to={`/products/${product.id}`} className="block">
-              <div className="mb-2">
+              {/* ADDED w-full to ensure the slider container takes full width */}
+              <div className="mb-2 w-full">
                 <Slider {...sliderSettings}>
                   {product.images.map((img, i) => (
-                    <div key={i} className="h-40 flex justify-center items-center">
+                    // ADDED w-full to the div wrapping the image inside the slider
+                    <div key={i} className="h-40 flex justify-center items-center w-full">
                       <img
                         src={img}
                         alt={`${product.title} ${i + 1}`}
