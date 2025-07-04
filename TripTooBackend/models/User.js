@@ -11,4 +11,5 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('User', UserSchema); // Export the User model
+// --- IMPORTANT: Use module.exports for Node.js CommonJS modules ---
+module.exports = mongoose.model('User', UserSchema);
