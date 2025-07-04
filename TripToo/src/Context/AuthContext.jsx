@@ -1,13 +1,13 @@
-// src/Context/AuthContext.jsx
+// src/Context/AuthContext.jsx - Reverted to Firebase Auth with Backend Profile Sync
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase.js';
+import { auth } from '../firebase.js'; // Using firebase.js again
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
+  GoogleAuthProvider, // Re-add for Google
+  signInWithPopup,    // Re-add for Google
 } from 'firebase/auth';
 
 const AuthContext = createContext();
@@ -16,25 +16,24 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // Ensure this is your deployed backend URL
+// Define your backend API base URL for deployment (or '/api' for local)
+const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- Set this to your deployed Render backend URL
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Modified: saveUserProfileToDb now accepts more details
-  const saveUserProfileToDb = async (user, additionalDetails = {}) => { // Added additionalDetails
+  // Helper function to create/update user profile in MongoDB (Linked by Firebase UID)
+  const saveUserProfileToDb = async (user, additionalDetails = {}) => {
     try {
       const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firebaseUid: user.uid,
+          firebaseUid: user.uid, // This is the crucial link to Firebase user
           email: user.email,
-          firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''), // Use provided or Google's
-          lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''), // Use provided or Google's
+          firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
+          lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''),
           address: additionalDetails.address || '',
           phone: additionalDetails.phone || '',
         }),
@@ -43,34 +42,29 @@ export const AuthProvider = ({ children }) => {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to save user profile to DB');
       }
-      const userData = await response.json();
-      console.log('User profile saved/updated in MongoDB:', userData);
+      console.log('User profile saved/updated in MongoDB:', await response.json());
     } catch (error) {
       console.error('Error saving user profile to MongoDB:', error);
     }
   };
 
-  // Modified: signup function now accepts additionalDetails
-  const signup = async (email, password, additionalDetails) => { // Added additionalDetails
+  // Firebase Auth functions (re-added)
+  const signup = async (email, password, additionalDetails) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user, additionalDetails); // Pass additionalDetails
+    await saveUserProfileToDb(userCredential.user, additionalDetails);
     return userCredential;
   };
 
-  // Modified: login function also passes basic user info
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user, { // Pass basic info during login too, for updates
-      firstName: userCredential.user.displayName ? userCredential.user.displayName.split(' ')[0] : '',
-      lastName: userCredential.user.displayName ? userCredential.user.displayName.split(' ').slice(1).join(' ') : ''
-    });
+    await saveUserProfileToDb(userCredential.user); // Sync profile on login
     return userCredential;
   };
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
-    await saveUserProfileToDb(userCredential.user); // Google user info already available in userCredential.user
+    await saveUserProfileToDb(userCredential.user); // Sync Google profile
     return userCredential;
   };
 
@@ -78,6 +72,7 @@ export const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
+  // Listen for auth state changes (re-added)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
@@ -91,8 +86,8 @@ export const AuthProvider = ({ children }) => {
     signup,
     login,
     logout,
-    signInWithGoogle,
-    loading
+    signInWithGoogle, // Include Google sign-in
+    loading,
   };
 
   return (

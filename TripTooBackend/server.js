@@ -1,4 +1,4 @@
-// triptoo-backend/server.js
+// triptoo-backend/server.js - Simplified for Firebase Hybrid Auth
 
 require('dotenv').config();
 const express = require('express');
@@ -9,30 +9,28 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- Import Route Modules ---
-// Make sure these paths are correct relative to server.js
-const userRoutes = require('./routes/userRoutes');
-const orderRoutes = require('./routes/orderRoutes');
+const userRoutes = require('./routes/userRoutes'); // User profile routes
+const orderRoutes = require('./routes/orderRoutes'); // Order routes
 
-// Middleware
+// --- Middleware ---
 app.use(express.json());
-app.use(cors()); // CORS should be enabled here
+app.use(cors()); // Enable CORS
 
-// MongoDB Connection
+// --- MongoDB Connection ---
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected successfully!'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Use API Routes ---
-// Assign imported routers to specific base paths
-app.use('/api/users', userRoutes); // All routes defined in userRoutes.js will be under /api/users
-app.use('/api/orders', orderRoutes); // All routes defined in orderRoutes.js will be under /api/orders
+app.use('/api/users', userRoutes); // User profile routes (no JWT protection on backend)
+app.use('/api/orders', orderRoutes); // Order routes (no JWT protection on backend)
 
-// Test Route for root URL
+// --- Test Route ---
 app.get('/', (req, res) => {
   res.send('Triptoo Backend API is running!');
 });
 
-// Start the server
+// --- Start the server ---
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });

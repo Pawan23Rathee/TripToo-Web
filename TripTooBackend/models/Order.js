@@ -2,7 +2,9 @@
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-  firebaseUid: { type: String, required: true },
+  // --- CHANGE: Link to User document by its MongoDB _id ---
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  // --------------------------------------------------------
   orderId: { type: String, required: true, unique: true },
   date: { type: Date, default: Date.now },
   total: { type: Number, required: true },
@@ -18,5 +20,4 @@ const OrderSchema = new mongoose.Schema({
   ]
 });
 
-// --- IMPORTANT: Use module.exports for Node.js CommonJS modules ---
 module.exports = mongoose.model('Order', OrderSchema);

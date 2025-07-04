@@ -1,20 +1,23 @@
 // triptoo-backend/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // --- IMPORTANT: Correct relative path to User model
+const User = require('../models/User'); // Import User model
 
 // Route to create/update user profile (POST /api/users)
 router.post('/', async (req, res) => {
   const { firebaseUid, email, firstName, lastName, address, phone } = req.body;
+
   try {
     let user = await User.findOne({ firebaseUid });
     if (user) {
+      // Update existing user profile
       user.firstName = firstName || user.firstName;
       user.lastName = lastName || user.lastName;
       user.address = address || user.address;
       user.phone = phone || user.phone;
       user.email = email || user.email;
     } else {
+      // Create new user profile
       user = new User({ firebaseUid, email, firstName, lastName, address, phone });
     }
     await user.save();
@@ -43,5 +46,4 @@ router.get('/:firebaseUid', async (req, res) => {
   }
 });
 
-// --- IMPORTANT: Use module.exports to export the router ---
 module.exports = router;
