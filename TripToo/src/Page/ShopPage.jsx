@@ -1,8 +1,8 @@
 // src/Page/ShopPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../Context/CartContext';
-import allProducts from '../data/products';
-import { Link } from 'react-router-dom'; // <--- Import Link
+import { useCart } from '../Context/CartContext.jsx'; // Correct: .js
+import allProducts from '../data/products.js'; // Correct: .js
+import { Link } from 'react-router-dom';
 
 const ShopPage = () => {
   const { addItemToCart } = useCart();
@@ -70,22 +70,16 @@ const ShopPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-6">
           {displayedProducts.map((product) => (
             <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-md flex flex-col transition-transform duration-200 hover:scale-[1.02]">
-              {/* Wrap the product card content in a Link */}
-              <Link to={`/products/${product.id}`} className="block"> {/* <--- Link to product detail page */}
+              <Link to={`/products/${product.id}`} className="block">
                 <div className="relative h-40 sm:h-48 mb-4 flex items-center justify-center overflow-hidden">
                   <img src={product.images[0] || '/placeholder.png'} alt={product.title} className="max-h-full max-w-full object-contain rounded-md" />
                 </div>
                 <h3 className="font-bold text-base sm:text-lg mb-1 text-[#0f1c2e]">{product.title}</h3>
                 <p className="text-xs sm:text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
-              </Link> {/* End of Link wrapper */}
-              {/* Add to Cart button remains outside the link */}
+              </Link>
               <div className="flex justify-between items-center mt-auto pt-2 border-t border-gray-200">
                 <span className="font-bold text-lg sm:text-xl text-[#0f1c2e]">${product.price.toFixed(2)}</span>
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="bg-[#38b000] hover:bg-[#42c500] text-white rounded-full p-2 transition-colors duration-200"
-                  title="Add to Cart"
-                >
+                <button onClick={() => handleAddToCart(product)} className="bg-[#38b000] hover:bg-[#42c500] text-white rounded-full p-2 transition-colors duration-200" title="Add to Cart">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                   </svg>

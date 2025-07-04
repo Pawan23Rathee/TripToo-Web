@@ -1,8 +1,5 @@
 // src/Component/CartItem.jsx
 import React from 'react';
-// No useCart import here, as props are passed from CartPage
-// Import react-icons if you use them for other elements here
-// import { FaMinus, FaPlus } from 'react-icons/fa'; // Example if you want quantity buttons
 
 function CartItem({ item, onQuantityChange, onRemove }) {
   const { id, name, description, images, quantity, price } = item;
@@ -24,6 +21,7 @@ function CartItem({ item, onQuantityChange, onRemove }) {
           className="w-20 h-20 sm:w-24 sm:h-24 object-contain border border-gray-300 rounded-md p-1"
         />
       </div>
+
       <div className="flex-grow flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="mb-2 sm:mb-0">
           <span className="font-bold text-lg text-[#0f1c2e] block">{name}</span>

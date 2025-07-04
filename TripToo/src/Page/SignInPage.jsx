@@ -1,6 +1,6 @@
-// src/Page/SignInPage.jsx (and SignUpPage.jsx will be similar)
+// src/Page/SignInPage.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../Context/AuthContext';
+import { useAuth } from '../Context/AuthContext.jsx'; // Correct: .jsx
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignInPage = () => {
@@ -26,13 +26,13 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="bg-[#f0f2f5] min-h-screen py-8 sm:py-10 flex items-center justify-center px-4"> {/* Responsive padding */}
-      <div className="bg-white max-w-md mx-auto p-6 sm:p-8 rounded-lg shadow-xl w-full"> {/* Responsive padding */}
+    <div className="bg-[#f0f2f5] min-h-screen py-8 sm:py-10 flex items-center justify-center px-4">
+      <div className="bg-white max-w-md mx-auto p-6 sm:p-8 rounded-lg shadow-xl w-full">
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0f1c2e] mb-6 sm:mb-8 text-center">Log In</h1>
 
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded relative mb-3 sm:mb-4 text-sm" role="alert">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6"> {/* Responsive spacing */}
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
             <label htmlFor="email" className="sr-only">Email</label>
             <input

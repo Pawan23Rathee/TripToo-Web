@@ -1,30 +1,25 @@
 // src/Page/OrderPage.jsx
 import React, { useState } from 'react';
-import mockOrders from '../data/mockOrders'; // Import mock order data
-
-// Optional: Import icons if you want to use them for expand/collapse
-// You would need to install react-icons: npm install react-icons
-// import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; // For example
+import mockOrders from '../data/mockOrders';
 
 const OrderPage = () => {
-  const [expandedOrderId, setExpandedOrderId] = useState(null); // State to track which order is expanded
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const toggleExpand = (orderId) => {
     setExpandedOrderId(prevId => (prevId === orderId ? null : orderId));
   };
 
   return (
-    <div className="bg-[#f0f2f5] min-h-screen py-10 px-4 sm:px-6 lg:px-8"> {/* Responsive padding */}
-      <div className="bg-white max-w-4xl mx-auto p-6 sm:p-8 rounded-lg shadow-xl"> {/* Responsive padding */}
+    <div className="bg-[#f0f2f5] min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white max-w-4xl mx-auto p-6 sm:p-8 rounded-lg shadow-xl">
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0f1c2e] mb-6 sm:mb-8 text-center">Your Orders</h1>
 
         {mockOrders.length === 0 ? (
           <p className="text-center text-gray-600 text-base sm:text-lg py-10">You haven't placed any orders yet.</p>
         ) : (
-          <div className="space-y-4 sm:space-y-6"> {/* Responsive spacing */}
+          <div className="space-y-4 sm:space-y-6">
             {mockOrders.map(order => (
               <div key={order.id} className="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                {/* Order Summary Header */}
                 <div
                   className="bg-gray-50 p-3 sm:p-4 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200"
                   onClick={() => toggleExpand(order.id)}
@@ -39,17 +34,14 @@ const OrderPage = () => {
                       Status: {order.status}
                     </p>
                   </div>
-                  {/* Optional: Chevron icon for expand/collapse */}
-                  {/* {expandedOrderId === order.id ? <FaChevronUp className="ml-4 text-gray-500" /> : <FaChevronDown className="ml-4 text-gray-500" />} */}
                 </div>
 
-                {/* Order Details (Conditionally Rendered) */}
                 {expandedOrderId === order.id && (
-                  <div className="p-3 sm:p-4 border-t border-gray-200 bg-white"> {/* Responsive padding */}
+                  <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
                     <h3 className="text-base sm:text-lg font-semibold text-[#0f1c2e] mb-2 sm:mb-3">Items in this Order:</h3>
-                    <div className="space-y-2 sm:space-y-3"> {/* Responsive spacing */}
+                    <div className="space-y-2 sm:space-y-3">
                       {order.items.map(item => (
-                        <div key={item.productId} className="flex items-center space-x-3 sm:space-x-4"> {/* Responsive spacing */}
+                        <div key={item.productId} className="flex items-center space-x-3 sm:space-x-4">
                           <img
                             src={item.image || '/placeholder.png'}
                             alt={item.name}

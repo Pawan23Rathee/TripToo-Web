@@ -1,22 +1,19 @@
 // src/Context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase'; // <-- CORRECT IMPORT: { auth } from relative path to firebase.js
-import { // These are Firebase SDK functions
+import { auth } from '../firebase'; // CORRECT: Named import for 'auth' from firebase.js
+import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
 } from 'firebase/auth';
 
-// Create the Auth Context
 const AuthContext = createContext();
 
-// Custom hook to use the Auth Context
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Auth Provider Component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);

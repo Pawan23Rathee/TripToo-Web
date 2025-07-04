@@ -1,16 +1,13 @@
 // src/Context/CartContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// 1. Create the context
 const CartContext = createContext();
 
-// 2. Create a custom hook to consume the context easily
-export const useCart = () => { // NAMED export
+export const useCart = () => {
   return useContext(CartContext);
 };
 
-// 3. Create the CartProvider component
-export const CartProvider = ({ children }) => { // NAMED export
+export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     try {
       const localCart = localStorage.getItem('triptooCartItems');

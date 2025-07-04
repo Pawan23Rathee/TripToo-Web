@@ -1,18 +1,17 @@
-// src/index.js
+// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { CartProvider } from './Context/CartContext';
-import { AuthProvider } from './Context/AuthContext'; // <--- Import AuthProvider
+import App from './App.jsx'; // Correct: App.jsx
+import './index.css'; // Global CSS
+import { CartProvider } from './Context/CartContext.jsx'; // Correct: CartContext.js
+import { AuthProvider } from './Context/AuthContext.jsx'; // Correct: AuthContext.jsx
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider> {/* AuthProvider wraps CartProvider and App */}
+    <AuthProvider>
       <CartProvider>
         <App />
       </CartProvider>
     </AuthProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
