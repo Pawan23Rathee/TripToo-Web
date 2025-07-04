@@ -1,12 +1,12 @@
+// src/Component/Footer.jsx
 import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white text-[#0f1c2e] py-4 text-center mt-20">
-      <p>&copy; 2025 Triptoo. All rights reserved.</p>
+    <footer className="bg-gray-900 text-white py-4 sm:py-6 text-center mt-auto px-4"> {/* Responsive padding */}
+      <p className="text-sm sm:text-base">&copy; {new Date().getFullYear()} TripToo. All rights reserved.</p> {/* Responsive font size */}
     </footer>
   );
 };
 
 export default Footer;
-

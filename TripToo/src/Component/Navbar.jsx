@@ -1,10 +1,13 @@
 // src/Component/Navbar.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../Context/CartContext'; // CORRECT: Named import
+import { useCart } from '../Context/CartContext';
+import { useAuth } from '../Context/AuthContext'; // <--- Import useAuth hook
+import UserDropdown from './UserDropdown'; // <--- Import UserDropdown
 
 const Navbar = () => {
   const { totalCartItemsCount } = useCart();
+  const { currentUser, loading } = useAuth(); // <--- Get currentUser and loading from AuthContext
 
   const handleScrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -29,13 +32,26 @@ const Navbar = () => {
           className="hover:text-[#a8e063] cursor-pointer"
           onClick={() => handleScrollToSection('about-us')}
         >
-          <Link to="/About">ABOUT US</Link>
-          
+          ABOUT US
         </li>
         <li className="hover:text-[#a8e063] cursor-pointer">
           <Link to="/contact">CONTACT</Link>
         </li>
-        <li>
+        {/* Conditional rendering for Auth buttons or UserDropdown */}
+        {!loading && ( // Only render after auth state is determined
+          currentUser ? (
+            <UserDropdown /> // Show dropdown if user is logged in
+          ) : (
+            <>
+              <li>
+                <Link to="/signin" className="hover:text-[#a8e063] cursor-pointer">SIGN IN</Link>
+              </li>
+              <li>
+                <Link to="/signup" className="hover:text-[#a8e063] cursor-pointer">SIGN UP</Link>
+              </li>
+            </>
+          )
+        )}
         <li className="relative">
             <Link to="/cart" className="hover:text-[#a8e063] cursor-pointer flex items-center space-x-1">
                 <span>🛒</span>
@@ -47,8 +63,6 @@ const Navbar = () => {
                 )}
             </Link>
         </li>
-        </li>
-          <button className="hover:text-[#a8e063] cursor-pointer">SIGN IN</button>
       </ul>
     </nav>
   );
