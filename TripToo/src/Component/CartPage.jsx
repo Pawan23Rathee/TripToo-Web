@@ -1,15 +1,17 @@
 // src/Page/CartPage.jsx
 import React from 'react';
-import CartItem from '../Component/CartItem.jsx';
-import { useCart } from '../Context/CartContext.jsx';
-import { useAuth } from '../Context/AuthContext.jsx'; // Import useAuth
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import CartItem from '../Component/CartItem.jsx'; // Ensure this is .jsx
+import { useCart } from '../Context/CartContext.jsx'; // Ensure this is .jsx
+import { useAuth } from '../Context/AuthContext.jsx'; // Ensure this is .jsx
+import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = '/api'; // Backend API URL
+// Define your backend API base URL for DEPLOYMENT
+// Example: const API_BASE_URL = 'https://triptoo-backend.onrender.com/api';
+const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- REPLACE THIS LINE
 
 function CartPage() {
-  const { cartItems, updateItemQuantity, removeItemFromCart, setCartItems } = useCart(); // Get setCartItems
-  const { currentUser } = useAuth(); // Get current user from auth context
+  const { cartItems, updateItemQuantity, removeItemFromCart, setCartItems } = useCart();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const totalCartPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0).toFixed(2);
@@ -17,7 +19,7 @@ function CartPage() {
   const handleProceedToCheckout = async () => {
     if (!currentUser) {
       alert("Please log in to proceed with your order.");
-      navigate('/signin'); // Redirect to sign-in page
+      navigate('/signin');
       return;
     }
 
@@ -29,15 +31,15 @@ function CartPage() {
     // Prepare order data for the backend
     const orderData = {
       firebaseUid: currentUser.uid,
-      orderId: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`, // Simple unique ID
+      orderId: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       total: parseFloat(totalCartPrice),
-      status: 'Pending', // Initial status
+      status: 'Pending',
       items: cartItems.map(item => ({
         productId: item.id,
-        name: item.title, // Use item.title for product name
+        name: item.title,
         quantity: item.quantity,
         price: item.price,
-        image: item.images[0] || '/placeholder.png'
+        image: item.images[0] || '/assets/placeholder.png' // Ensure placeholder path is correct
       }))
     };
 
@@ -61,7 +63,7 @@ function CartPage() {
 
       // Clear cart after successful order
       setCartItems([]);
-      navigate('/my-orders'); // Redirect to order history page
+      navigate('/my-orders');
     } catch (error) {
       console.error('Error proceeding to checkout:', error);
       alert('There was an error placing your order. Please try again. ' + error.message);

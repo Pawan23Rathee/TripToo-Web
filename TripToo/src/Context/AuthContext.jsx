@@ -1,6 +1,6 @@
 // src/Context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase.js';
+import { auth } from '../firebase.js'; // Ensure this is .js
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -14,14 +14,16 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// Define your backend API base URL
-const API_BASE_URL = '/api'; // Make sure this matches your backend port
+// Define your backend API base URL for DEPLOYMENT
+// AFTER DEPLOYING BACKEND ON RENDER, PASTE ITS URL HERE
+// Example: const API_BASE_URL = 'https://triptoo-backend.onrender.com/api';
+// For LOCAL DEVELOPMENT, you would use: const API_BASE_URL = '/api'; (with Vite proxy)
+const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- REPLACE THIS LINE
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper function to create/update user profile in MongoDB
   const saveUserProfileToDb = async (user) => {
     try {
       const response = await fetch(`${API_BASE_URL}/users`, {
@@ -32,8 +34,6 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({
           firebaseUid: user.uid,
           email: user.email,
-          // You can add more profile fields here if you collect them during signup
-          // e.g., firstName: '...', lastName: '...'
         }),
       });
       if (!response.ok) {
@@ -44,21 +44,17 @@ export const AuthProvider = ({ children }) => {
       console.log('User profile saved/updated in MongoDB:', userData);
     } catch (error) {
       console.error('Error saving user profile to MongoDB:', error);
-      // You might want to handle this error more gracefully, e.g., show a toast
     }
   };
 
   const signup = async (email, password) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // After successful Firebase signup, save basic profile to MongoDB
     await saveUserProfileToDb(userCredential.user);
     return userCredential;
   };
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    // After successful Firebase login, ensure profile exists/is updated in MongoDB
-    // This is useful if a user logs in from a new device or if their profile wasn't saved immediately after signup
     await saveUserProfileToDb(userCredential.user);
     return userCredential;
   };
@@ -71,10 +67,6 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
       setLoading(false);
-      // Optional: If you want to fetch full user profile from MongoDB on every auth state change:
-      // if (user) {
-      //   fetchUserProfile(user.uid);
-      // }
     });
     return unsubscribe;
   }, []);
