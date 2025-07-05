@@ -24,29 +24,38 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Helper function to create/update user profile in MongoDB (Linked by Firebase UID)
-  const saveUserProfileToDb = async (user, additionalDetails = {}) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firebaseUid: user.uid, // This is the crucial link to Firebase user
-          email: user.email,
-          firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
-          lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''),
-          address: additionalDetails.address || '',
-          phone: additionalDetails.phone || '',
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save user profile to DB');
-      }
-      console.log('User profile saved/updated in MongoDB:', await response.json());
-    } catch (error) {
-      console.error('Error saving user profile to MongoDB:', error);
+ const saveUserProfileToDb = async (user, additionalDetails = {}) => {
+  if (!user || !user.uid) {
+    console.error('❌ Firebase UID is missing. User not saved to backend.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firebaseUid: user.uid,
+        email: user.email,
+        firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
+        lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''),
+        address: additionalDetails.address || '',
+        phone: additionalDetails.phone || '',
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to save user profile to DB');
     }
-  };
+
+    const result = await response.json();
+    console.log('✅ User profile saved to MongoDB:', result);
+  } catch (error) {
+    console.error('❌ Error saving user profile to MongoDB:', error.message);
+  }
+};
+
 
   // Firebase Auth functions (re-added)
   const signup = async (email, password, additionalDetails) => {
