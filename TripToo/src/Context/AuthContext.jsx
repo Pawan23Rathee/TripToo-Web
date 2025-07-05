@@ -58,11 +58,20 @@ export const AuthProvider = ({ children }) => {
 
 
   // Firebase Auth functions (re-added)
-  const signup = async (email, password, additionalDetails) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user, additionalDetails);
-    return userCredential;
-  };
+ const signup = async (email, password, additionalDetails) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password); // ✅ FIXED
+
+  const user = userCredential?.user;
+  if (user && user.uid) {
+    await saveUserProfileToDb(user, additionalDetails);
+  } else {
+    console.error("🔥 Signup successful, but Firebase UID not found.");
+  }
+
+  return userCredential;
+};
+
+
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);

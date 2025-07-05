@@ -12,17 +12,21 @@ const generateToken = (id, role) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, firstName, lastName, address, phone } = req.body;
+    const { firebaseUid, email, password, firstName, lastName, address, phone } = req.body;
+
+    if (!firebaseUid) {
+      return res.status(400).json({ message: "firebaseUid is required" });
+    }
 
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "User with this email already exists" });
     }
 
-    // ✅ Securely hash the password before storing
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await new User({
+      firebaseUid, // ✅ Include this
       email,
       password: hashedPassword,
       firstName,
@@ -35,6 +39,7 @@ exports.register = async (req, res) => {
     if (user) {
       res.status(201).json({
         _id: user._id,
+        firebaseUid: user.firebaseUid, // ✅ Include this if needed on frontend
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -49,6 +54,7 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: err.message || "Server error during signup" });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {
