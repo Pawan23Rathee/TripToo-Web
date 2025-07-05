@@ -1,4 +1,3 @@
-// src/Context/AuthContext.jsx - Firebase Auth with Backend Profile Sync
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../firebase.js';
 import {
@@ -22,8 +21,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const saveUserProfileToDb = async (user, additionalDetails = {}) => {
-    if (!user || !user.uid) {
-      console.error('❌ Firebase UID is missing. User not saved to backend.');
+    if (!user || !user.uid || user.uid === "null") {
+      console.error('❌ Firebase UID is missing or invalid. User not saved to backend.');
+      alert('Firebase UID is missing or invalid.');
       return;
     }
 
@@ -54,13 +54,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (email, password, additionalDetails) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password); // ✅ FIXED HERE
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential?.user;
+
+    console.log("🔥 SIGNUP userCredential:", userCredential);
+    console.log("🔥 Firebase UID during signup:", user?.uid);
 
     if (user && user.uid) {
       await saveUserProfileToDb(user, additionalDetails);
     } else {
       console.error("🔥 Signup successful, but Firebase UID not found.");
+      alert("Error: Firebase UID is missing. User not saved to backend.");
     }
 
     return userCredential;
@@ -68,14 +72,22 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    await saveUserProfileToDb(userCredential.user); // Sync profile on login
+    const user = userCredential?.user;
+
+    console.log("🔥 LOGIN userCredential:", userCredential);
+    console.log("🔥 Firebase UID during login:", user?.uid);
+
+    if (user && user.uid) {
+      await saveUserProfileToDb(user);
+    }
+
     return userCredential;
   };
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
-    await saveUserProfileToDb(userCredential.user); // Sync Google profile
+    await saveUserProfileToDb(userCredential.user);
     return userCredential;
   };
 
