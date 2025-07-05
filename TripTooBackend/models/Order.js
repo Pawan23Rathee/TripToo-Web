@@ -1,6 +1,7 @@
+// triptoo-backend/models/Order.js
 const mongoose = require('mongoose');
 
-const OrderSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -34,5 +35,5 @@ const OrderSchema = new mongoose.Schema({
   },
 });
 
-// ✅ This export must be correct for `Order.find()` to work
-module.exports = mongoose.model('Order', OrderSchema);
+// ✅ Correct export syntax — this is CRUCIAL
+module.exports = mongoose.model('Order', orderSchema);
