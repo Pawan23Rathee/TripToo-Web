@@ -53,22 +53,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (email, password, additionalDetails) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential?.user;
+ const signup = async (email, password, additionalDetails) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential?.user;
 
-    console.log("🔥 SIGNUP userCredential:", userCredential);
-    console.log("🔥 Firebase UID during signup:", user?.uid);
+  console.log("🔥 SIGNUP userCredential:", userCredential);
+  console.log("🔥 Firebase UID during signup:", user?.uid);
 
-    if (user && user.uid) {
-      await saveUserProfileToDb(user, additionalDetails);
-    } else {
-      console.error("🔥 Signup successful, but Firebase UID not found.");
-      alert("Error: Firebase UID is missing. User not saved to backend.");
-    }
-
+  // ✅ Validate UID before sending to backend
+  if (!user?.uid || user.uid === "null") {
+    console.error("❌ Firebase UID missing or invalid. Skipping backend save.");
+    alert("Signup failed: Firebase UID is missing.");
     return userCredential;
-  };
+  }
+
+  await saveUserProfileToDb(user, additionalDetails);
+  return userCredential;
+};
+
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
