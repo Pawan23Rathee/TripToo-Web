@@ -6,8 +6,13 @@ const User = require('../models/User');
 router.post('/', async (req, res) => {
   const { firebaseUid, email, firstName, lastName, address, phone } = req.body;
 
-  if (!firebaseUid || !email) {
-    return res.status(400).json({ message: 'firebaseUid and email are required.' });
+  // ✅ Strong validation to block empty or null UID
+  if (!firebaseUid || firebaseUid === 'null' || firebaseUid === '') {
+    return res.status(400).json({ message: 'Invalid firebaseUid. Cannot be null or empty.' });
+  }
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required.' });
   }
 
   try {
