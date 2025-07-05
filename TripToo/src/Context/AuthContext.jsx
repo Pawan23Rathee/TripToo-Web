@@ -17,7 +17,7 @@ export const useAuth = () => {
 };
 
 // Define your backend API base URL for deployment (or '/api' for local)
-const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- Set this to your deployed Render backend URL
+const API_BASE_URL = 'https://triptoo-backend-6wsx.onrender.com'; // <--- Set this to your deployed Render backend URL
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);

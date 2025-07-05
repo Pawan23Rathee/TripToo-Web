@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Define your backend API base URL for DEPLOYMENT
 // Example: const API_BASE_URL = 'https://triptoo-backend.onrender.com/api';
-const API_BASE_URL = 'https://triptoo-backend.onrender.com'; // <--- REPLACE THIS LINE
+const API_BASE_URL = 'https://triptoo-backend-6wsx.onrender.com'; // <--- REPLACE THIS LINE
 
 function CartPage() {
   const { cartItems, updateItemQuantity, removeItemFromCart, setCartItems } = useCart();
