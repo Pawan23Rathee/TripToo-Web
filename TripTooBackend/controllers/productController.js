@@ -1,14 +1,19 @@
-// triptoo-backend/controllers/productController.js
 const Comment = require('../models/Comment');
-const User = require('../models/User'); // Import User model (for optional user data population)
+const User = require('../models/User'); // To populate user info
 
 // Create a new comment (POST /api/products/:productId/comments)
-exports.createComment = async (req, res) => { // <--- CRUCIAL: Ensure it's 'exports.createComment = async ...'
+exports.createComment = async (req, res) => {
   const { productId } = req.params;
   const { comment, rating } = req.body;
-  const userId = req.user._id; // User ID from the JWT (protect middleware)
 
-  if (!comment) {
+  // Ensure protect middleware is used, so req.user is available
+  const userId = req.user?._id;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized. Please log in.' });
+  }
+
+  if (!comment || comment.trim() === '') {
     return res.status(400).json({ message: 'Comment text is required.' });
   }
 
@@ -22,8 +27,9 @@ exports.createComment = async (req, res) => { // <--- CRUCIAL: Ensure it's 'expo
 
     await newComment.save();
 
+    // Populate user details (excluding avatar if not present in schema)
     const populatedComment = await Comment.findById(newComment._id)
-                                          .populate('userId', 'email firstName lastName avatar');
+      .populate('userId', 'email firstName lastName'); // Remove avatar unless added to schema
 
     res.status(201).json(populatedComment);
   } catch (error) {
@@ -32,14 +38,14 @@ exports.createComment = async (req, res) => { // <--- CRUCIAL: Ensure it's 'expo
   }
 };
 
-// Get all comments for a specific product (GET /api/products/:productId/comments)
-exports.getCommentsByProduct = async (req, res) => { // <--- CRUCIAL: Ensure it's 'exports.getCommentsByProduct = async ...'
+// Get all comments for a product (GET /api/products/:productId/comments)
+exports.getCommentsByProduct = async (req, res) => {
   const { productId } = req.params;
 
   try {
     const comments = await Comment.find({ productId })
-                                  .sort({ createdAt: -1 })
-                                  .populate('userId', 'email firstName lastName avatar');
+      .sort({ createdAt: -1 })
+      .populate('userId', 'email firstName lastName'); // Remove avatar if not in schema
 
     res.status(200).json(comments);
   } catch (error) {

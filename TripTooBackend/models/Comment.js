@@ -1,12 +1,27 @@
-// triptoo-backend/models/Comment.js
 const mongoose = require('mongoose');
 
-const CommentSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Link to the user who commented
-  productId: { type: String, required: true }, // Link to the product by its ID string
-  comment: { type: String, required: true, trim: true },
-  rating: { type: Number, min: 1, max: 5 }, // Optional: If you want to add star ratings
-  createdAt: { type: Date, default: Date.now }
+const commentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  productId: {
+    type: String, // or mongoose.Schema.Types.ObjectId if you have a Product model
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+  },
+}, {
+  timestamps: true, // Adds createdAt and updatedAt
 });
 
-module.exports = mongoose.model('Comment', CommentSchema);
+module.exports = mongoose.model('Comment', commentSchema);

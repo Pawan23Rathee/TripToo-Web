@@ -9,14 +9,15 @@ import { getFirestore } from "firebase/firestore"; // <--- ADD THIS LINE (for da
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCvITUxnctEW_CKTkzRXP-zYakNzrofBrc",
-  authDomain: "triptoo-2e4b6.firebaseapp.com",
-  projectId: "triptoo-2e4b6",
-  storageBucket: "triptoo-2e4b6.firebasestorage.app",
-  messagingSenderId: "289687872214",
-  appId: "1:289687872214:web:3971cb5582a7f25ad29f77",
-  measurementId: "G-9KSGCV0J02" // Keep this if you use analytics
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+rementId: "G-9KSGCV0J02" // Keep this if you use analytics
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

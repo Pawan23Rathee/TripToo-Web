@@ -1,23 +1,34 @@
-// triptoo-backend/models/Order.js
 const mongoose = require('mongoose');
 
-const OrderSchema = new mongoose.Schema({
-  // --- CHANGE: Link to User document by its MongoDB _id ---
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  // --------------------------------------------------------
-  orderId: { type: String, required: true, unique: true },
-  date: { type: Date, default: Date.now },
-  total: { type: Number, required: true },
-  status: { type: String, default: 'Pending', enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] },
+const orderSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  orderId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+    default: 'Pending',
+  },
   items: [
     {
-      productId: { type: String, required: true },
+      productId: { type: String, required: true }, // Or use ObjectId if product model exists
       name: { type: String, required: true },
       quantity: { type: Number, required: true },
       price: { type: Number, required: true },
-      image: { type: String }
-    }
-  ]
+      image: { type: String, default: '' },
+    },
+  ],
+}, {
+  timestamps: true, // Adds createdAt and updatedAt fields automatically
 });
-
-module.exports = mongoose.model('Order', OrderSchema);
