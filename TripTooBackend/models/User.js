@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // Required for password comparison
 
-const user = await new User({
-  firebaseUid: `dummy-${Date.now()}`, // ✅ Add this line temporarily
-  email,
-  password: hashedPassword,
-  firstName,
-  lastName,
-  address,
-  phone,
-  role: 'user',
-}).save();
-
+const userSchema = new mongoose.Schema({
+  // firebaseUid: { type: String, required: true, unique: true }, // For Firebase users
+  email: { type: String, required: true, unique: true },
+  password: { type: String }, // Optional for Firebase Auth
+  firstName: { type: String },
+  lastName: { type: String },
+  address: { type: String },
+  phone: { type: String },
+  role: { type: String, default: 'user' },
+});
 
 // ✅ Method to compare password for traditional auth
 userSchema.methods.matchPassword = async function (enteredPassword) {
