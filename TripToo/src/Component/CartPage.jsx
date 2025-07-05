@@ -1,21 +1,20 @@
 // src/Page/CartPage.jsx
 import React from 'react';
-import CartItem from '../Component/CartItem.jsx'; // Ensure this is .jsx
-import { useCart } from '../Context/CartContext.jsx'; // Ensure this is .jsx
-import { useAuth } from '../Context/AuthContext.jsx'; // Ensure this is .jsx
+import CartItem from '../Component/CartItem.jsx';
+import { useCart } from '../Context/CartContext.jsx';
+import { useAuth } from '../Context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
-// Define your backend API base URL for DEPLOYMENT
-// Example: const API_BASE_URL = 'https://triptoo-backend.onrender.com/api';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 
 function CartPage() {
   const { cartItems, updateItemQuantity, removeItemFromCart, setCartItems } = useCart();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const totalCartPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0).toFixed(2);
+  const totalCartPrice = cartItems
+    .reduce((acc, item) => acc + (item.price * item.quantity), 0)
+    .toFixed(2);
 
   const handleProceedToCheckout = async () => {
     if (!currentUser) {
@@ -29,7 +28,6 @@ function CartPage() {
       return;
     }
 
-    // Prepare order data for the backend
     const orderData = {
       firebaseUid: currentUser.uid,
       orderId: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -40,16 +38,14 @@ function CartPage() {
         name: item.title,
         quantity: item.quantity,
         price: item.price,
-        image: item.images[0] || '/assets/placeholder.png' // Ensure placeholder path is correct
-      }))
+        image: item.images[0] || '/assets/placeholder.png',
+      })),
     };
 
     try {
       const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
       });
 
@@ -62,7 +58,6 @@ function CartPage() {
       console.log('Order successfully created:', createdOrder);
       alert('Order placed successfully! Your Order ID is: ' + createdOrder.orderId);
 
-      // Clear cart after successful order
       setCartItems([]);
       navigate('/my-orders');
     } catch (error) {

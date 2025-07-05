@@ -1,77 +1,70 @@
-// src/Context/AuthContext.jsx - Reverted to Firebase Auth with Backend Profile Sync
+// src/Context/AuthContext.jsx - Firebase Auth with Backend Profile Sync
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase.js'; // Using firebase.js again
+import { auth } from '../firebase.js';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider, // Re-add for Google
-  signInWithPopup,    // Re-add for Google
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
-// Define your backend API base URL for deployment (or '/api' for local)
-const API_BASE_URL = 'https://triptoo-backend-6wsx.onrender.com/api'; // <--- Set this to your deployed Render backend URL
+// Backend API base URL
+const API_BASE_URL = 'https://triptoo-backend-6wsx.onrender.com/api';
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper function to create/update user profile in MongoDB (Linked by Firebase UID)
- const saveUserProfileToDb = async (user, additionalDetails = {}) => {
-  if (!user || !user.uid) {
-    console.error('❌ Firebase UID is missing. User not saved to backend.');
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firebaseUid: user.uid,
-        email: user.email,
-        firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
-        lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''),
-        address: additionalDetails.address || '',
-        phone: additionalDetails.phone || '',
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to save user profile to DB');
+  const saveUserProfileToDb = async (user, additionalDetails = {}) => {
+    if (!user || !user.uid) {
+      console.error('❌ Firebase UID is missing. User not saved to backend.');
+      return;
     }
 
-    const result = await response.json();
-    console.log('✅ User profile saved to MongoDB:', result);
-  } catch (error) {
-    console.error('❌ Error saving user profile to MongoDB:', error.message);
-  }
-};
+    try {
+      const response = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firebaseUid: user.uid,
+          email: user.email,
+          firstName: additionalDetails.firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
+          lastName: additionalDetails.lastName || (user.displayName ? user.displayName.split(' ').slice(1).join(' ') : ''),
+          address: additionalDetails.address || '',
+          phone: additionalDetails.phone || '',
+        }),
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save user profile to DB');
+      }
 
-  // Firebase Auth functions (re-added)
- const signup = async (email, password, additionalDetails) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password); // ✅ FIXED
+      const result = await response.json();
+      console.log('✅ User profile saved to MongoDB:', result);
+    } catch (error) {
+      console.error('❌ Error saving user profile to MongoDB:', error.message);
+    }
+  };
 
-  const user = userCredential?.user;
-  if (user && user.uid) {
-    await saveUserProfileToDb(user, additionalDetails);
-  } else {
-    console.error("🔥 Signup successful, but Firebase UID not found.");
-  }
+  const signup = async (email, password, additionalDetails) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password); // ✅ FIXED HERE
+    const user = userCredential?.user;
 
-  return userCredential;
-};
+    if (user && user.uid) {
+      await saveUserProfileToDb(user, additionalDetails);
+    } else {
+      console.error("🔥 Signup successful, but Firebase UID not found.");
+    }
 
-
+    return userCredential;
+  };
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -86,11 +79,8 @@ export const AuthProvider = ({ children }) => {
     return userCredential;
   };
 
-  const logout = () => {
-    return signOut(auth);
-  };
+  const logout = () => signOut(auth);
 
-  // Listen for auth state changes (re-added)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
@@ -104,7 +94,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     login,
     logout,
-    signInWithGoogle, // Include Google sign-in
+    signInWithGoogle,
     loading,
   };
 
