@@ -1,4 +1,4 @@
-// triptoo-backend/server.js - Main entry point for the backend application
+// triptoo-backend/server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,15 +7,18 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
+const verifyFirebaseToken = require('./middleware/verifyFirebaseToken');
 
 connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow only your frontend origins
+// ✅ Allow only trusted frontend origins
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://trip-too-web-ddda.vercel.app'
+  'https://trip-too-web-ddda.vercel.app',
+  'https://trip-too-web-lxrt.vercel.app', // ✅ Add the correct domain from your screenshot
+  
 ];
 
 app.use(cors({
@@ -59,6 +62,9 @@ app.use((err, req, res, next) => {
   console.error('🔥 Uncaught error:', err.stack);
   res.status(500).json({ message: 'Something went wrong', error: err.message });
 });
+
+
+app.use('/api/orders', verifyFirebaseToken, require('./routes/orderRoutes'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Backend server running on port ${PORT}`);

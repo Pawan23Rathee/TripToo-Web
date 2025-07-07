@@ -20,12 +20,24 @@ const OrderPage = () => {
 
       setPageLoading(true);
       setError(null);
+
       try {
-        const response = await fetch(`${API_BASE_URL}/orders/${currentUser.uid}`);
+        // ✅ Get Firebase token
+        const token = await currentUser.getIdToken();
+
+        const response = await fetch(`${API_BASE_URL}/orders/${currentUser.uid}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // ✅ Attach token
+          },
+        });
+
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || 'Failed to fetch orders');
         }
+
         const data = await response.json();
         setOrders(data);
       } catch (err) {
