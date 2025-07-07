@@ -2,9 +2,8 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  firebaseUid: {
+    type: String,
     required: true,
   },
   orderId: {
@@ -29,11 +28,27 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: 'Pending',
   },
-  date: {
+  shippingInfo: {
+    fullName: String,
+    addressLine1: String,
+    addressLine2: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: String,
+    phone: String,
+  },
+  paymentMethod: {
+    type: String,
+    last4: String,
+    expiry: String,
+    nameOnCard: String,
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-// ✅ Correct export syntax — this is CRUCIAL
+// ✅ Correct export
 module.exports = mongoose.model('Order', orderSchema);

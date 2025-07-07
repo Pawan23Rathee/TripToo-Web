@@ -5,10 +5,8 @@ import { useCart } from '../Context/CartContext.jsx';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 function CartPage() {
-  const { cartItems, updateItemQuantity, removeItemFromCart, setCartItems } = useCart();
+  const { cartItems, updateItemQuantity, removeItemFromCart } = useCart();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -16,7 +14,7 @@ function CartPage() {
     .reduce((acc, item) => acc + (item.price * item.quantity), 0)
     .toFixed(2);
 
-  const handleProceedToCheckout = async () => {
+  const handleProceedToCheckout = () => {
     if (!currentUser) {
       alert("Please log in to proceed with your order.");
       navigate('/signin');
@@ -28,42 +26,8 @@ function CartPage() {
       return;
     }
 
-    const orderData = {
-      firebaseUid: currentUser.uid,
-      orderId: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      total: parseFloat(totalCartPrice),
-      status: 'Pending',
-      items: cartItems.map(item => ({
-        productId: item.id,
-        name: item.title,
-        quantity: item.quantity,
-        price: item.price,
-        image: item.images[0] || '/assets/placeholder.png',
-      })),
-    };
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create order');
-      }
-
-      const createdOrder = await response.json();
-      console.log('Order successfully created:', createdOrder);
-      alert('Order placed successfully! Your Order ID is: ' + createdOrder.orderId);
-
-      setCartItems([]);
-      navigate('/my-orders');
-    } catch (error) {
-      console.error('Error proceeding to checkout:', error);
-      alert('There was an error placing your order. Please try again. ' + error.message);
-    }
+    // ✅ Navigate to the shipping step (first step of checkout)
+    navigate('/checkout/shipping');
   };
 
   return (

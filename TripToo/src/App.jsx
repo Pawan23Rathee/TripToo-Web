@@ -13,6 +13,11 @@ import OrderPage from './Page/OrderPage.jsx';
 import SignUpPage from './Page/SignUpPage.jsx';
 import SignInPage from './Page/SignInPage.jsx';
 import ProductDetailPage from './Page/ProductDetailPage.jsx';
+import ShippingPage from './Page/ShippingPage.jsx'; // <--- CRUCIAL: IMPORT ShippingPage
+import PaymentPage from './Page/PaymentPage.jsx';   // <--- CRUCIAL: IMPORT PaymentPage
+import OrderReviewPage from './Page/OrderReviewPage.jsx';
+import OrderConfirmationPage from './Page/OrderConfirmationPage.jsx';
+
 import { useAuth } from './Context/AuthContext.jsx';
 
 const ProtectedRoute = ({ children }) => {
@@ -38,7 +43,7 @@ function App() {
 
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<><Banner /><ProductSection /></>} />
+            <Route path="/" element={<><Banner /><ProductSection /><AboutUs /></>} /> {/* Added AboutUs back */}
             <Route path="/cart" element={<CartPage />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/shop" element={<ShopPage />} />
@@ -48,6 +53,15 @@ function App() {
             <Route path="/signin" element={<SignInPage />} />
 
             <Route path="/products/:productId" element={<ProductDetailPage />} />
+
+            {/* Checkout Flow Routes */}
+            <Route path="/checkout/shipping" element={<ShippingPage />} />
+            <Route path="/checkout/payment" element={<PaymentPage />} />
+            <Route path="/checkout/review" element={<OrderReviewPage />} />
+            <Route path="/checkout/confirmation" element={<OrderConfirmationPage />} />
+
+            {/* Profile Page Route (Make sure this exists if you use it) */}
+           
 
             <Route
               path="/my-orders"
